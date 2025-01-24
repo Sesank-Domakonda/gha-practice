@@ -23,6 +23,8 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    outputs: 
+      script-file: ${{ steps.publish.outputs.sesank }}
     steps:
       - name: get code
         uses: actions/checkout@v3
@@ -32,6 +34,10 @@ jobs:
 
       - name: Build website
         run: npm run build
+
+      - name: publish JS filename
+        id: publish
+        run: find dist/assets/*.js -type f -execdir echo 'sesank={}' >> $GITHUB_OUTPUT ';'
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
@@ -51,6 +57,9 @@ jobs:
 
       - name: output files
         run: ls
+
+      - name: output file name
+        run: echo "{{ needs.build.outputs.script-file }}"
 
       - name: deploy
         run: echo "deploying.."
